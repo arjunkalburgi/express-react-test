@@ -1,35 +1,36 @@
-import React, { Component } from "react";
+import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { apiResponse: "" };
-    }
+const App = () => {
+  const [apiResponse, setApiResonse] = React.useState("");
 
-    callAPI() {
-        fetch("http://localhost:9000/testAPI")
-            .then(res => res.text())
-            .then(res => this.setState({ apiResponse: res }))
-            .catch(err => err);
-    }
+  const callAPI = () => {
+    return fetch("http://localhost:9000/testAPI")
+      .then((res) => res.text())
+      .then((res) => setApiResonse(res))
+      .catch((err) => err);
+  };
 
-    componentDidMount() {
-        this.callAPI();
-    }
+  React.useEffect(() => {
+    callAPI();
+  }, []);
 
-    render() {
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h1 className="App-title">Welcome to React</h1>
-                </header>
-                <p className="App-intro">{this.state.apiResponse}</p>
-            </div>
-        );
-    }
-}
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <h1 className="App-title">Welcome to React</h1>
+      </header>
+      <p className="App-intro">{apiResponse}</p>
+    </div>
+  );
+};
 
 export default App;
+
+// dash guide => we won't support Component-based react
+// extended documentation => explain how to do it
+
+// Can we use our existing hooks for class-based component? No
+// update nylas-react => export code for Component-based react
