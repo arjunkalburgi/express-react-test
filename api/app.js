@@ -10,15 +10,15 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var testAPIRouter = require("./routes/testAPI");
 
-–const Nylas = require("nylas");
+const Nylas = require("nylas");
 const { WebhookTriggers } = require("nylas/lib/models/webhook");
 const { Scope } = require("nylas/lib/models/connect");
 const { ServerBindings } = require("nylas/lib/config");
 const { default: Draft } = require("nylas/lib/models/draft");
 
 // Nylas application credentials
-const clientId = "3rdziz95e8oqfv49ecccrbtl3";
-const clientSecret = "5pk3seaq1oe2qxb0t4pb46zrs";
+const clientId = "";
+const clientSecret = "";
 
 // Initialize an instance of the Nylas SDK using the client credentials
 const nylasClient = new Nylas({
@@ -59,6 +59,7 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
     emailAddress: user.emailAddress,
   });
 };
+
 var app = express();
 
 // view engine setup

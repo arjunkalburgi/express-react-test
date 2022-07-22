@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import useNylasReact from "./nylas";
+import { useNylas } from "@nylas/nylas-react";
 
 const options = {
   serverBaseUrl: "http://localhost:9000",
@@ -9,8 +9,7 @@ const options = {
 };
 
 const App = () => {
-  const { exchangeMailboxToken, sendEmail, startAuthProcess } =
-    useNylasReact(options);
+  const { authWithRedirect, exchangeCodeFromUrlForToken } = useNylas();
   const [userId, setUserId] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [apiResponse, setApiResonse] = React.useState("");
@@ -40,13 +39,13 @@ const App = () => {
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.has("code")) {
-      exchangeMailboxToken().then(handleTokenExchange);
+      exchangeCodeFromUrlForToken().then(handleTokenExchange);
     }
 
     if (params.has("userId")) {
       setUserId(params.get("userId"));
     }
-  }, [exchangeMailboxToken]);
+  }, [exchangeCodeFromUrlForToken]);
 
   const [sending, setSending] = React.useState(false);
 
@@ -70,6 +69,33 @@ const App = () => {
     alert("Sent. Check console log...");
     reset();
   };
+
+  const sendEmail = React.useCallback(
+    async ({ userId, to, body }) => {
+      try {
+        const url = options.serverBaseUrl + "/nylas/send-email";
+        const rawResp = await fetch(url, {
+          method: "POST",
+          headers: {
+            Authorization: userId,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to, body }),
+        });
+        const r = await rawResp.json();
+
+        console.log(r);
+        return r;
+      } catch (e) {
+        console.warn(`Error sending emails:`, e);
+        if (e instanceof Error) {
+          console.error(e);
+        }
+        return false;
+      }
+    },
+    [options.serverBaseUrl]
+  );
 
   return (
     <div className="App">
@@ -184,7 +210,10 @@ const App = () => {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  startAuthProcess(email);
+                  authWithRedirect({
+                    emailAddress: email,
+                    successRedirectUrl: "",
+                  });
                 }}
               >
                 <input
